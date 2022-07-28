@@ -21,14 +21,7 @@ def send_text_message(destination: str, message: str):
         )
 
     print(message.sid)
-
-
-
     
-    
-    
-
-
 def main():
     name = input('What is your name? \n')
 
