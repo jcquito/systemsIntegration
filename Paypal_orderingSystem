@@ -1,0 +1,53 @@
+from paypalcheckoutsdk.core import PayPalHttpClient, SandboxEnvironment
+from paypalcheckoutsdk.orders import OrdersCreateRequest
+from paypalhttp import HttpError
+
+
+
+client_id = "AVmtjM56K0q_rD38hGChflTy3MMZWDPwrpmoJP6nRJEWcgklmLU43zMgufAO5OZOVMlVbfSVNafZVobu"
+client_secret = "EGk_IHxRnAqa02RzxveruEuiKKVVTn7OKDdupi-1J3cUsW1TbrvD1OUFj1XW39V5wJoJk-G2t1g89IMh"
+
+
+environment = SandboxEnvironment(client_id=client_id, client_secret=client_secret)
+client = PayPalHttpClient(environment)
+
+
+
+request = OrdersCreateRequest()
+
+request.prefer('return=representation')
+
+request.request_body (
+    {
+        "intent": "CAPTURE",
+        "purchase_units": [
+            {
+                "amount": {
+                    "currency_code": "USD",
+                    "value": "100.00"
+                }
+            }
+        ]
+    }
+)
+
+try:
+
+    response = client.execute(request)
+    print('Order With Complete Payload:')
+    print('Status Code:', response.status_code)
+    print('Status:', response.result.status)
+    print('Order ID:', response.result.id)
+    print('Intent:', response.result.intent)
+    print('Links:')
+    for link in response.result.links:
+        print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+        print('Total Amount: {} {}'.format(response.result.purchase_units[0].amount.currency_code, response.result.purchase_units[0].amount.value))
+
+        order = response.result
+        print(order)
+except IOError as ioe:
+    print(ioe)
+    if isinstance(ioe, HttpError):
+
+        print(ioe.status_code)
